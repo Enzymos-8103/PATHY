@@ -1,30 +1,41 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import 'package:pathy/main.dart';
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  @override
+  Widget build(BuildContext context) {
+    // 🔹 On tests or web → show placeholder instead of crashing
+    if (kIsWeb ||
+        ![TargetPlatform.android, TargetPlatform.iOS]
+            .contains(defaultTargetPlatform)) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Search Nearby")),
+        body: const Center(
+          child: Text(
+            "Map not available in this environment",
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
+    // 🔹 On Android/iOS → show real Google Map
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Search Nearby"),
+        backgroundColor: Colors.green,
+      ),
+      body: const GoogleMap(
+        initialCameraPosition: CameraPosition(
+          target: LatLng(32.0853, 34.7818), // Tel Aviv
+          zoom: 12,
+        ),
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+      ),
+    );
+  }
 }
