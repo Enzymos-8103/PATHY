@@ -1,17 +1,17 @@
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
 import 'Views/TripsPageScreen.dart';
 
-// void main() {
-//   runApp(const TripsApp());
-// }
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(TripsApp());
 }
+
+
 
 
 class TripsApp extends StatelessWidget {

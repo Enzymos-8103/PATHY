@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+import '../Models/utl.dart';
 
 
 
@@ -16,6 +20,26 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late AnimationController _floatingController;
   int displayedDestinations = 15;
+  Future<void> checkConnection() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+        // Connected to internet
+        debugPrint('Connected to internet');
+      }
+    } on SocketException catch (_) {
+      // Not connected to internet
+      debugPrint('Not connected to internet');
+      if (mounted) {
+        final utils = Utils();
+        utils.showMyDialog2(
+            context,
+            "אין אינטרנט",
+            "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה"
+        );
+      }
+    }
+  }
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -732,9 +756,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _animationController =
-        AnimationController(
-            duration: const Duration(milliseconds: 800), vsync: this);
+    _animationController = AnimationController(
+        duration: const Duration(milliseconds: 800), vsync: this);
     _floatingController =
         AnimationController(duration: const Duration(seconds: 3), vsync: this);
     for (var key in filters.keys) {
@@ -742,6 +765,13 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     }
     _animationController.forward();
     _floatingController.repeat(reverse: true);
+
+    _checkConnectionOnInit();
+  }
+
+  // Check connection when page initializes
+  Future<void> _checkConnectionOnInit() async {
+    await checkConnection();
   }
 
   @override
@@ -904,9 +934,10 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
                   if (activeFilters.isNotEmpty)
-                  // _buildActiveFilters(activeFilters, gradientColors, cardColor, shadowColor),
-                    const SizedBox(height: 40),
-                  // _buildFilterButton(gradientColors, shadowColor, accentColor),
+                    _buildActiveFilters(
+                        activeFilters, gradientColors, cardColor, shadowColor),
+                  const SizedBox(height: 40),
+                  _buildFilterButton(gradientColors, shadowColor, accentColor),
                   const SizedBox(height: 40),
                   // _buildFeaturesSection(gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
@@ -1391,8 +1422,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
 
   // active filters bar
   Widget _buildActiveFilters(List<String> activeFilters,
-      List<Color> gradientColors,
-      Color cardColor, Color shadowColor) {
+      List<Color> gradientColors, Color cardColor, Color shadowColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
@@ -1414,30 +1444,32 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             .toList(),
       ),
     );
+  }
 
-    Widget _buildFilterButton(List<Color> gradientColors, Color shadowColor,
-        Color accentColor) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.filter_list),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: gradientColors[0],
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
-          ),
-          onPressed: () {
-            // open filter bottom sheet here
-          },
-          label: const Text("סינון", style: TextStyle(color: Colors.white)),
+
+  Widget _buildFilterButton(List<Color> gradientColors, Color shadowColor, Color accentColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton.icon(
+        icon: const Icon(Icons.filter_list),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: gradientColors[0],
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20)),
         ),
-      );
-    }
+        onPressed: () {
+          // open filter bottom sheet here
+        },
+        label: const Text("סינון", style: TextStyle(color: Colors.white)),
+      ),
+    );
+  }
+
+
 
     // testimonials section
-    Widget _buildTestimonials(List<Color> gradientColors, Color cardColor,
-        Color shadowColor, Color accentColor) {
+    Widget _buildTestimonials(List<Color> gradientColors, Color cardColor, Color shadowColor, Color accentColor) {
       final testimonials = [
         {"name": "נועה", "text": "חוויה מדהימה!"},
         {"name": "דני", "text": "מסלול מהמם, שירות מעולה"},
@@ -1468,4 +1500,5 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
         ),
       );
     }
+
   }
