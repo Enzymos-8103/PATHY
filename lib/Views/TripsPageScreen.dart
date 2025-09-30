@@ -904,8 +904,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
                   if (activeFilters.isNotEmpty)
-                    // _buildActiveFilters(activeFilters, gradientColors, cardColor, shadowColor),
-                  const SizedBox(height: 40),
+                  // _buildActiveFilters(activeFilters, gradientColors, cardColor, shadowColor),
+                    const SizedBox(height: 40),
                   // _buildFilterButton(gradientColors, shadowColor, accentColor),
                   const SizedBox(height: 40),
                   // _buildFeaturesSection(gradientColors, cardColor, shadowColor),
@@ -1288,172 +1288,184 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
-// void _showDestinationDetails(BuildContext context, Map<String, dynamic> destination) {
-//   final currentCategory = currentCategoryData;
-//   final List<Color> gradientColors = List<Color>.from(currentCategory["gradientColors"]);
-//
-//   showModalBottomSheet(
-//     context: context,
-//     isScrollControlled: true,
-//     backgroundColor: Colors.transparent,
-//     builder: (context) => Container(
-//       height: MediaQuery.of(context).size.height * 0.85,
-//       decoration: const BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.only(
-//           topLeft: Radius.circular(30),
-//           topRight: Radius.circular(30),
-//         ),
-//       ),
-//       child: Column(
-//           children: [
-//       Stack(
-//       children: [
-//       ClipRRect(
-//       borderRadius: const BorderRadius.only(
-//       topLeft: Radius.circular(30),
-//       topRight: Radius.circular(30),
-//     ),
-//     child: Image.network(
-//       destination['imageUrl'],
-//       height: 300,
-//       width: double.infinity,
-//       fit: BoxFit.cover,
-//     ),
-//   ),
-//   Positioned(
-//   top: 20,
-//   right: 20,
-//   child: Container(
-//   decoration: BoxDecoration(
-//   color: Colors.white,
-//   shape: BoxShape.circle,
-//   boxShadow: [
-//   BoxShadow(
-//   color: Colors.black.withOpacity(0.2),
-//   blurRadius: 8,
-//   ),
-//   ],
-//   ),
-//   child: IconButton(
-//   icon: const Icon(Icons.close),
-//   onPressed: () => Navigator.pop(context),
-//   ),
-//   ),
-//   ),
-//   ],
-//   ),
-//   Expanded(
-//   child: SingleChildScrollView(
-//   padding: const EdgeInsets.all(25),
-//   child: Column(
-//   crossAxisAlignment: CrossAxisAlignment.start,
-//   children: [
-//   Text(
-//   destination['name'],
-//   style: TextStyle(
-//   fontSize: 28,
-//   fontWeight: FontWeight.bold,
-//   color: gradientColors[0],
-//   ),
-//   ),
-//   const SizedBox(height: 10),
-//   Row(
-//   children: [
-//   Icon(Icons.location_on, color: gradientColors[0], size: 20),
-//   const SizedBox(width: 5),
-//   Text(
-//   destination['location'],
-//   style: TextStyle(
-//   fontSize: 16,
-//   color: Colors.grey[700],
-//   ),
-//   ),
-//   const Spacer(),
-//   const Icon(Icons.star, color: Colors.amber, size: 20),
-//   const SizedBox(width: 5),
-//   Text(
-//   "${destination['rating']}",
-//   style: const TextStyle(
-//   fontSize: 16,
-//   fontWeight: FontWeight.bold,
-//   ),
-//   ),
-//   ],
-//   ),
-//   const SizedBox(height: 20),
-//   const Divider(),
-//   const SizedBox(height: 20),
-//   Text(
-//   "אודות המקום",
-//   style: TextStyle(
-//   fontSize: 20,
-//   fontWeight: FontWeight.bold,
-//   color: gradientColors[0],
-//   ),
-//   ),
-//   const SizedBox(height: 10),
-//   Text(
-//   "מקום מדהים לטיול! ${destination['name']} ממוקם ב${destination['location']} ומציע חוויה בלתי נשכחת. אידיאלי למשפחות, זוגות וחובבי טבע.",
-//   style: TextStyle(
-//   fontSize: 16,
-//   color: Colors.grey[800],
-//   height: 1.5,
-//   ),
-//   ),
-//   const SizedBox(height: 25),
-//   Wrap(
-//   spacing: 10,
-//   runSpacing: 10,
-//   children: [
-//   _buildFeatureChip(Icons.local_parking, "חניה", gradientColors[0]),
-//   _buildFeatureChip(Icons.restaurant, "מסעדות", gradientColors[0]),
-//   _buildFeatureChip(Icons.wc, "שירותים", gradientColors[0]),
-//   _buildFeatureChip(Icons.accessible, "נגיש", gradientColors[0]),
-//   ],
-//   ),
-//   const SizedBox(height: 30),
-//   Container(
-//   width: double.infinity,
-//   decoration: BoxDecoration(
-//   gradient: LinearGradient(colors: gradientColors),
-//   borderRadius: BorderRadius.circular(15),
-//   boxShadow: [
-//   BoxShadow(
-//   color: gradientColors[0].withOpacity(0.4),
-//   blurRadius: 10,
-//   offset: const Offset(0, 5),
-//   ),
-//   ],
-//   ),
-//   child: ElevatedButton.icon(
-//   icon: const Icon(Icons.directions, color: Colors.white),
-//   label: const Text(
-//   "קבל הוראות הגעה",
-//   style: TextStyle(
-//   color: Colors.white,
-//   fontSize: 18,
-//   fontWeight: FontWeight.bold,
-//   ),
-//   ),
-//   style: ElevatedButton.styleFrom(
-//   backgroundColor: Colors.transparent,
-//   shadowColor: Colors.transparent,
-//   padding: const EdgeInsets.symmetric(vertical: 18),
-//   shape: RoundedRectangleBorder(
-//   borderRadius: BorderRadius.circular(15),
-//   ),
-//   ),
-//   onPressed: () {
-//   ScaffoldMessenger.of(context).showSnackBar(
-//   SnackBar(
-//   content: Text("פותח ניווט ל${destination['name']}"),
-//   backgroundColor: gradientColors[0],
-//   ),
-//   );
-//   },
-//   ),
-//   ),
-//   ],
+  // show destination details bottom sheet
+  void _showDestinationDetails(BuildContext context,
+      Map<String, dynamic> destination) {
+    final currentCategory = currentCategoryData;
+    final List<Color> gradientColors = List<Color>.from(
+        currentCategory["gradientColors"]);
 
-}
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          Container(
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.85,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+            ),
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                  child: Image.network(
+                    destination['imageUrl'],
+                    height: 280,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(destination['name'],
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: gradientColors[0])),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on,
+                                color: gradientColors[0], size: 18),
+                            const SizedBox(width: 5),
+                            Text(destination['location']),
+                            const Spacer(),
+                            const Icon(
+                                Icons.star, color: Colors.amber, size: 18),
+                            Text("${destination['rating']}"),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          "תיאור המקום כאן... ניתן להוסיף מידע נוסף לפי הצורך.",
+                          style: TextStyle(
+                              color: Colors.grey[800], height: 1.5),
+                        ),
+                        const SizedBox(height: 20),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            _buildFeatureChip(
+                                Icons.local_parking, "חניה", gradientColors[0]),
+                            _buildFeatureChip(
+                                Icons.restaurant, "מסעדות", gradientColors[0]),
+                            _buildFeatureChip(
+                                Icons.wc, "שירותים", gradientColors[0]),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  // helper for feature chips
+  Widget _buildFeatureChip(IconData icon, String label, Color color) {
+    return Chip(
+      avatar: Icon(icon, color: Colors.white, size: 18),
+      label: Text(label, style: const TextStyle(color: Colors.white)),
+      backgroundColor: color,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    );
+  }
+
+  // active filters bar
+  Widget _buildActiveFilters(List<String> activeFilters,
+      List<Color> gradientColors,
+      Color cardColor, Color shadowColor) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: shadowColor.withOpacity(0.25), blurRadius: 12),
+        ],
+      ),
+      child: Wrap(
+        spacing: 8,
+        children: activeFilters
+            .map((f) =>
+            Chip(
+              label: Text(f, style: const TextStyle(color: Colors.white)),
+              backgroundColor: gradientColors[0],
+            ))
+            .toList(),
+      ),
+    );
+
+    Widget _buildFilterButton(List<Color> gradientColors, Color shadowColor,
+        Color accentColor) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.filter_list),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: gradientColors[0],
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20)),
+          ),
+          onPressed: () {
+            // open filter bottom sheet here
+          },
+          label: const Text("סינון", style: TextStyle(color: Colors.white)),
+        ),
+      );
+    }
+
+    // testimonials section
+    Widget _buildTestimonials(List<Color> gradientColors, Color cardColor,
+        Color shadowColor, Color accentColor) {
+      final testimonials = [
+        {"name": "נועה", "text": "חוויה מדהימה!"},
+        {"name": "דני", "text": "מסלול מהמם, שירות מעולה"},
+      ];
+      return Container(
+        margin: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: shadowColor.withOpacity(0.3), blurRadius: 12),
+          ],
+        ),
+        child: Column(
+          children: testimonials
+              .map((t) =>
+              ListTile(
+                leading: CircleAvatar(
+                  backgroundColor: gradientColors[0],
+                  child: Text(t["name"]![0],
+                      style: const TextStyle(color: Colors.white)),
+                ),
+                title: Text(t["name"]!),
+                subtitle: Text(t["text"]!),
+              ))
+              .toList(),
+        ),
+      );
+    }
+  }
