@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'destination_details_page.dart';
+import 'DestinationDetailsScreen.dart';
 // Assuming Utils class exists in your project
 // import '../Models/utils.dart';
 
@@ -32,6 +33,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     }
   }
 
+
+
   void _showNoInternetDialog() {
     showDialog(
       context: context,
@@ -47,6 +50,9 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
       ),
     );
   }
+
+
+
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -702,165 +708,245 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 25),
-          GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 15,
-              crossAxisSpacing: 15,
-              childAspectRatio: 0.75,
-            ),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: displayedDestinations.clamp(0, allDestinations.length),
-            itemBuilder: (context, index) {
-              final destination = allDestinations[index];
-              return GestureDetector(
-                onTap: () {
-                  _showDestinationDetails(context, destination);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
+
+
+
+
+
+          SizedBox(
+            height: 400, // or MediaQuery height
+            child:
+            StreamBuilder<QuerySnapshot>(
+
+          stream: FirebaseFirestore.instance
+              .collection('destinations')
+              .orderBy('rating', descending: true) // You can sort by any field
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text('No destinations found.'));
+            }
+
+            final destinations = snapshot.data!.docs;
+
+            return ListView.builder(
+              itemCount: destinations.length,
+              itemBuilder: (context, index) {
+                final data = destinations[index].data() as Map<String, dynamic>;
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(data['imageUrl'] ?? ''),
+                  ),
+                  title: Text(data['name'] ?? 'No name'),
+                  subtitle: Text(data['location'] ?? ''),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      Text('${data['rating'] ?? ''}'),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        Image.network(
-                          destination['imageUrl'],
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    gradientColors[0].withOpacity(0.8),
-                                    gradientColors[1].withOpacity(0.6),
-                                  ],
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.image_not_supported,
-                                color: Colors.white,
-                                size: 50,
-                              ),
-                            );
-                          },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [gradientColors[0], gradientColors[1]],
-                                ),
-                              ),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.8),
-                              ],
-                              stops: const [0.5, 1.0],
-                            ),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: Text(data['name']),
+                        content: Text(data['description'] ?? ''),
+                        actions: [
+                          TextButton(
+                            child: const Text('Close'),
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          left: 0,
-                          right: 0,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  destination['name'],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black,
-                                        blurRadius: 4,
-                                      ),
-                                    ],
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.location_on,
-                                      color: Colors.white,
-                                      size: 14,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Expanded(
-                                      child: Text(
-                                        destination['location'],
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                      size: 14,
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      "${destination['rating']}",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+
+
+          // )
+          // ]
+      ),
+
+
+
+    //
+    // GridView.builder(
+    //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+    //           crossAxisCount: 2,
+    //           mainAxisSpacing: 15,
+    //           crossAxisSpacing: 15,
+    //           childAspectRatio: 0.75,
+    //         ),
+    //         shrinkWrap: true,
+    //         physics: const NeverScrollableScrollPhysics(),
+    //         itemCount: displayedDestinations.clamp(0, allDestinations.length),
+    //         itemBuilder: (context, index) {
+    //           final destination = allDestinations[index];
+    //           return GestureDetector(
+    //             onTap: () {
+    //               _showDestinationDetails(context, destination);
+    //             },
+    //             child: Container(
+    //               decoration: BoxDecoration(
+    //                 borderRadius: BorderRadius.circular(20),
+    //                 boxShadow: [
+    //                   BoxShadow(
+    //                     color: Colors.black.withOpacity(0.2),
+    //                     blurRadius: 10,
+    //                     offset: const Offset(0, 5),
+    //                   ),
+    //                 ],
+    //               ),
+    //               child: ClipRRect(
+    //                 borderRadius: BorderRadius.circular(20),
+    //                 child: Stack(
+    //                   fit: StackFit.expand,
+    //                   children: [
+    //                     Image.network(
+    //                       destination['imageUrl'],
+    //                       fit: BoxFit.cover,
+    //                       errorBuilder: (context, error, stackTrace) {
+    //                         return Container(
+    //                           decoration: BoxDecoration(
+    //                             gradient: LinearGradient(
+    //                               begin: Alignment.topLeft,
+    //                               end: Alignment.bottomRight,
+    //                               colors: [
+    //                                 gradientColors[0].withOpacity(0.8),
+    //                                 gradientColors[1].withOpacity(0.6),
+    //                               ],
+    //                             ),
+    //                           ),
+    //                           child: const Icon(
+    //                             Icons.image_not_supported,
+    //                             color: Colors.white,
+    //                             size: 50,
+    //                           ),
+    //                         );
+    //                       },
+    //                       loadingBuilder: (context, child, loadingProgress) {
+    //                         if (loadingProgress == null) return child;
+    //                         return Container(
+    //                           decoration: BoxDecoration(
+    //                             gradient: LinearGradient(
+    //                               colors: [gradientColors[0], gradientColors[1]],
+    //                             ),
+    //                           ),
+    //                           child: Center(
+    //                             child: CircularProgressIndicator(
+    //                               color: Colors.white,
+    //                               value: loadingProgress.expectedTotalBytes != null
+    //                                   ? loadingProgress.cumulativeBytesLoaded /
+    //                                   loadingProgress.expectedTotalBytes!
+    //                                   : null,
+    //                             ),
+    //                           ),
+    //                         );
+    //                       },
+    //                     ),
+    //                     Container(
+    //                       decoration: BoxDecoration(
+    //                         gradient: LinearGradient(
+    //                           begin: Alignment.topCenter,
+    //                           end: Alignment.bottomCenter,
+    //                           colors: [
+    //                             Colors.transparent,
+    //                             Colors.black.withOpacity(0.8),
+    //                           ],
+    //                           stops: const [0.5, 1.0],
+    //                         ),
+    //                       ),
+    //                     ),
+    //                     Positioned(
+    //                       bottom: 0,
+    //                       left: 0,
+    //                       right: 0,
+    //                       child: Padding(
+    //                         padding: const EdgeInsets.all(12),
+    //                         child: Column(
+    //                           crossAxisAlignment: CrossAxisAlignment.start,
+    //                           children: [
+    //                             Text(
+    //                               destination['name'],
+    //                               style: const TextStyle(
+    //                                 color: Colors.white,
+    //                                 fontSize: 16,
+    //                                 fontWeight: FontWeight.bold,
+    //                                 shadows: [
+    //                                   Shadow(
+    //                                     color: Colors.black,
+    //                                     blurRadius: 4,
+    //                                   ),
+    //                                 ],
+    //                               ),
+    //                               maxLines: 2,
+    //                               overflow: TextOverflow.ellipsis,
+    //                             ),
+    //                             const SizedBox(height: 4),
+    //                             Row(
+    //                               children: [
+    //                                 const Icon(
+    //                                   Icons.location_on,
+    //                                   color: Colors.white,
+    //                                   size: 14,
+    //                                 ),
+    //                                 const SizedBox(width: 4),
+    //                                 Expanded(
+    //                                   child: Text(
+    //                                     destination['location'],
+    //                                     style: const TextStyle(
+    //                                       color: Colors.white,
+    //                                       fontSize: 12,
+    //                                     ),
+    //                                     maxLines: 1,
+    //                                     overflow: TextOverflow.ellipsis,
+    //                                   ),
+    //                                 ),
+    //                                 const Icon(
+    //                                   Icons.star,
+    //                                   color: Colors.amber,
+    //                                   size: 14,
+    //                                 ),
+    //                                 const SizedBox(width: 2),
+    //                                 Text(
+    //                                   "${destination['rating']}",
+    //                                   style: const TextStyle(
+    //                                     color: Colors.white,
+    //                                     fontSize: 12,
+    //                                     fontWeight: FontWeight.bold,
+    //                                   ),
+    //                                 ),
+    //                               ],
+    //                             ),
+    //                           ],
+    //                         ),
+    //                       ),
+    //                     ),
+    //                   ],
+    //                 ),
+    //               ),
+    //             ),
+    //           );
+    //         },
+    //       ),
+    //
+
+
+
           if (displayedDestinations < allDestinations.length) ...[
             const SizedBox(height: 25),
             Container(
