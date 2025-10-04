@@ -3,6 +3,7 @@ class Destination {
   final String location;
   final String imageUrl;
   final double rating;
+  final String description;
 
 
   // Constructor
@@ -11,6 +12,7 @@ class Destination {
     required this.location,
     required this.imageUrl,
     required this.rating,
+    required this.description,
   });
 
   // Factory constructor to create a User from JSON (Map)
@@ -20,6 +22,7 @@ class Destination {
       location: json['location'] as String,
       imageUrl: json['imageUrl'] as String,
       rating: json['rating'] as double,
+      description: json['description'] as String,
 
 
     );

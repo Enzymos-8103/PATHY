@@ -10,10 +10,6 @@ void main() async {
   await Firebase.initializeApp();
   runApp(TripsApp());
 }
-
-
-
-
 class TripsApp extends StatelessWidget {
   const TripsApp({super.key});
 

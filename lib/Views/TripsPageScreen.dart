@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import '../Models/utils.dart';
-
-
-
+// Assuming Utils class exists in your project
+// import '../Models/utils.dart';
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
@@ -19,25 +17,35 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late AnimationController _floatingController;
   int displayedDestinations = 15;
+
   Future<void> checkConnection() async {
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        // Connected to internet
         debugPrint('Connected to internet');
       }
     } on SocketException catch (_) {
-      // Not connected to internet
       debugPrint('Not connected to internet');
       if (mounted) {
-        final utils = Utils();
-        utils.showMyDialog2(
-            context,
-            "אין אינטרנט",
-            "האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה"
-        );
+        _showNoInternetDialog();
       }
     }
+  }
+
+  void _showNoInternetDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("אין אינטרנט"),
+        content: const Text("האפליקציה דורשת חיבור לאינטרנט, נא להתחבר בבקשה"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("אישור"),
+          ),
+        ],
+      ),
+    );
   }
 
   final List<Map<String, dynamic>> categories = [
@@ -133,565 +141,111 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     },
   ];
 
-  // Real image URLs for Israeli destinations
   final List<Map<String, dynamic>> allDestinations = [
     {
       "name": "ים המלח",
       "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1580237334042-fabc5c3f32f0?w=800",
-      "rating": 4.9
+      "imageUrl": "https://images.pexels.com/photos/3244513/pexels-photo-3244513.jpeg",
+      "rating": 4.9,
+      "description": "ים המלח הוא אחד המקומות המיוחדים בעולם. הוא נמצא בנקודה הנמוכה ביותר על פני כדור הארץ, כ-430 מטרים מתחת לפני הים. המים במלוחים ביותר בעולם ומאפשרים ציפה ייחודית."
     },
     {
       "name": "עין גדי",
-      "location": "ים המלח",
-      "imageUrl": "https://images.unsplash.com/photo-1613486881163-a7f6b5e4c498?w=800",
-      "rating": 4.8
+      "location": "דרום",
+      "imageUrl": "https://images.pexels.com/photos/326311/pexels-photo-326311.jpeg",
+      "rating": 4.8,
+      "description": "שמורת טבע עין גדי מציעה נחלים, מפלים ונוף מדברי עוצר נשימה. מקום מושלם לטיולים ורחצה במים קרירים."
     },
     {
       "name": "הכותל המערבי",
       "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1564868109020-7c2db6901900?w=800",
-      "rating": 5.0
+      "imageUrl": "https://images.pexels.com/photos/572313/pexels-photo-572313.jpeg",
+      "rating": 5.0,
+      "description": "הכותל המערבי הוא אחד..."
     },
     {
       "name": "תל אביב",
       "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=800",
-      "rating": 4.7
+      "imageUrl": "https://images.pexels.com/photos/2193300/pexels-photo-2193300.jpeg",
+      "rating": 4.7,
+      "description": "עיר תוססת עם חופים יפים..."
     },
     {
       "name": "חיפה",
       "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1551636898-47668aa61de2?w=800",
-      "rating": 4.6
+      "imageUrl": "https://images.pexels.com/photos/587115/pexels-photo-587115.jpeg",
+      "rating": 4.6,
+      "description": "עיר נמל ציורית עם גנים הבהאיים..."
     },
     {
       "name": "אילת",
       "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800",
-      "rating": 4.8
+      "imageUrl": "https://images.pexels.com/photos/21014/pexels-photo.jpg",
+      "rating": 4.8,
+      "description": "עיר נופש באזור הדרומי ביותר..."
     },
     {
       "name": "מצדה",
       "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1569468859797-0c087b2a8c8f?w=800",
-      "rating": 4.9
+      "imageUrl": "https://images.pexels.com/photos/301428/pexels-photo-301428.jpeg",
+      "rating": 4.9,
+      "description": "אתר ארכיאולוגי מרשים..."
     },
     {
       "name": "הגליל",
       "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1590759668628-05b0fc34acb7?w=800",
-      "rating": 4.7
+      "imageUrl": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg",
+      "rating": 4.7,
+      "description": "אזור הררי ירוק עם כפרים ציוריים..."
     },
     {
       "name": "כנרת",
       "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-      "rating": 4.8
+      "imageUrl": "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg",
+      "rating": 4.8,
+      "description": "ים המים היפה בישראל..."
     },
     {
       "name": "גן הבהאים",
       "location": "חיפה",
-      "imageUrl": "https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?w=800",
-      "rating": 4.9
+      "imageUrl": "https://images.pexels.com/photos/346429/pexels-photo-346429.jpeg",
+      "rating": 4.9,
+      "description": "גנים מדהימים עם טרסות..."
     },
     {
       "name": "העיר העתיקה",
       "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 5.0
+      "imageUrl": "https://images.pexels.com/photos/253828/pexels-photo-253828.jpeg",
+      "rating": 5.0,
+      "description": "העיר העתיקה של ירושלים היא מקום מרתק..."
     },
     {
       "name": "ראש הנקרה",
       "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800",
-      "rating": 4.7
+      "imageUrl": "https://images.pexels.com/photos/268431/pexels-photo-268431.jpeg",
+      "rating": 4.7,
+      "description": "מערות מרהיבות בצוק הים..."
     },
     {
       "name": "קיסריה",
       "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1571847028143-c63f0b6a0c8c?w=800",
-      "rating": 4.6
+      "imageUrl": "https://images.pexels.com/photos/21014/pexels-photo-21014.jpeg",
+      "rating": 4.6,
+      "description": "עיר עתיקה עם שרידים רומיים מרשימים..."
     },
     {
       "name": "מצפה רמון",
       "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800",
-      "rating": 4.9
+      "imageUrl": "https://images.pexels.com/photos/65945/pexels-photo-65945.jpeg",
+      "rating": 4.9,
+      "description": "מכתש ענק ומדהים במדבר הנגב..."
     },
     {
       "name": "טבריה",
       "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1558442074-02da9e41b499?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "חוף תל אביב",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נמל יפו",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "הר הזיתים",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "בניאס",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "צפת",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "עכו העתיקה",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1571847028143-c63f0b6a0c8c?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "שוק מחנה יהודה",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "הר מירון",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל דולב",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "חוף אכזיב",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "בית שאן",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1571847028143-c63f0b6a0c8c?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "הר תבור",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "חוף דור",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל שניר",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "פארק הירקון",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "רמת הגולן",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל עמוד",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "חוף הרצליה",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "מדבר יהודה",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל יהודיה",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "חוף נתניה",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "שמורת נחל חרמון",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "מוזיאון ישראל",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1595433707802-6b2626ef1c91?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "שדרות רוטשילד",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל דוד",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "חוף פלמחים",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "נחל תנינים",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "יער ירושלים",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "חוף גורדון",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל קדום",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "שוק הכרמל",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "גן החיות התנכי",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "נחל זויתן",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "מתחם התחנה",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "חוף חדרה",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "נחל חרוד",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "טיילת חיפה",
-      "location": "חיפה",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל עובדיה",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "שוק לוינסקי",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "פארק נאות קדומים",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל משושים",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "חוף בת ים",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נחל איילון",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "שער יפו",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "נחל צפית",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "שער שכם",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "נחל דישון",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "מרכז עזריאלי",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נחל סוכר",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "שוק הפשפשים",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "נחל חצבני",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "פארק צ'רלס קלור",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל ערוגות",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "שוק הנמל",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נחל פרת",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "כיכר ציון",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "נחל גילבון",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נמל חיפה",
-      "location": "חיפה",
-      "imageUrl": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל תבור",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "יער בן שמן",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "פארק הגלבוע",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.8
-    },
-    {
-      "name": "שער האריות",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "נחל קישון",
-      "location": "חיפה",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "מבצר עתלית",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1571847028143-c63f0b6a0c8c?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "שדרות ארלוזורוב",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "נחל כזיב",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "שוני",
-      "location": "דרום",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נחל אורן",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "כיכר רבין",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "נחל עין גב",
-      "location": "צפון",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "גן הבירה",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
-    },
-    {
-      "name": "הרובע היהודי",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800",
-      "rating": 4.9
-    },
-    {
-      "name": "שוק בצלאל",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "נחל שורק",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "פארק מיני ישראל",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800",
-      "rating": 4.4
-    },
-    {
-      "name": "יער הקדושים",
-      "location": "ירושלים",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.6
-    },
-    {
-      "name": "חוף הדולפינריום",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800",
-      "rating": 4.5
-    },
-    {
-      "name": "פארק תל אפק",
-      "location": "מרכז",
-      "imageUrl": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800",
-      "rating": 4.7
+      "imageUrl": "https://images.pexels.com/photos/57481/pexels-photo-57481.jpeg",
+      "rating": 4.5,
+      "description": "עיר עתיקה על שפת הכנרת..."
     },
   ];
 
@@ -747,28 +301,31 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   final List<String> regions = ["הכל", "צפון", "מרכז", "דרום", "ירושלים"];
 
   Map<String, dynamic> get currentCategoryData {
-    return categories
-        .firstWhere((cat) => cat["name"] == selectedCategory,
-        orElse: () => categories[0]);
+    return categories.firstWhere(
+          (cat) => cat["name"] == selectedCategory,
+      orElse: () => categories[0],
+    );
   }
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
-        duration: const Duration(milliseconds: 800), vsync: this);
-    _floatingController =
-        AnimationController(duration: const Duration(seconds: 3), vsync: this);
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _floatingController = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    );
     for (var key in filters.keys) {
       selectedFilters[key] = false;
     }
     _animationController.forward();
     _floatingController.repeat(reverse: true);
-
     _checkConnectionOnInit();
   }
 
-  // Check connection when page initializes
   Future<void> _checkConnectionOnInit() async {
     await checkConnection();
   }
@@ -796,10 +353,10 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     final currentCategory = currentCategoryData;
     final List<Color> backgroundColors =
     List<Color>.from(currentCategory["backgroundColors"]);
-    final List<Color> appBarColors = List<Color>.from(
-        currentCategory["appBarColors"]);
-    final List<Color> gradientColors = List<Color>.from(
-        currentCategory["gradientColors"]);
+    final List<Color> appBarColors =
+    List<Color>.from(currentCategory["appBarColors"]);
+    final List<Color> gradientColors =
+    List<Color>.from(currentCategory["gradientColors"]);
     final Color shadowColor = currentCategory["shadowColor"];
     final Color accentColor = currentCategory["accentColor"];
     final Color cardColor = currentCategory["cardColor"];
@@ -809,7 +366,10 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
         duration: const Duration(milliseconds: 800),
         decoration: BoxDecoration(
           gradient: RadialGradient(
-              center: Alignment.topLeft, radius: 1.5, colors: backgroundColors),
+            center: Alignment.topLeft,
+            radius: 1.5,
+            colors: backgroundColors,
+          ),
         ),
         child: Stack(
           children: [
@@ -818,10 +378,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 animation: _floatingController,
                 builder: (context, child) {
                   return Positioned(
-                    left: (index * 80.0) % MediaQuery
-                        .of(context)
-                        .size
-                        .width,
+                    left: (index * 80.0) % MediaQuery.of(context).size.width,
                     top: 100 +
                         (index * 60.0) % 400 +
                         (_floatingController.value * 30 * (index % 3 + 1)),
@@ -849,98 +406,17 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             SingleChildScrollView(
               child: Column(
                 children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 800),
-                    height: 140,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [...appBarColors, accentColor.withOpacity(0.3)],
-                        stops: const [0.0, 0.7, 1.0],
-                      ),
-                      borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          bottomRight: Radius.circular(40)),
-                      boxShadow: [
-                        BoxShadow(
-                            color: shadowColor.withOpacity(0.4),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8))
-                      ],
-                    ),
-                    child: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(colors: [
-                                  Colors.white.withOpacity(0.3),
-                                  Colors.white.withOpacity(0.1)
-                                ]),
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
-                                    width: 2),
-                              ),
-                              child: IconButton(
-                                icon: const Icon(Icons.travel_explore,
-                                    color: Colors.white, size: 28),
-                                onPressed: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                      const Text("Map feature coming soon!"),
-                                      backgroundColor: gradientColors[0],
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                            const Expanded(
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("PATHY",
-                                        style: TextStyle(
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.w900,
-                                            color: Colors.white,
-                                            letterSpacing: 3)),
-                                    Text("גלה את ישראל",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.white70,
-                                            letterSpacing: 2)),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 56),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildAppBar(gradientColors, appBarColors, accentColor, shadowColor),
                   const SizedBox(height: 40),
-                  _buildCategoriesSection(
-                      gradientColors, cardColor, shadowColor),
+                  _buildCategoriesSection(gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
-                  _buildDestinationsGrid(
-                      gradientColors, cardColor, shadowColor),
+                  _buildDestinationsGrid(gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
                   if (activeFilters.isNotEmpty)
                     _buildActiveFilters(
                         activeFilters, gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
                   _buildFilterButton(gradientColors, shadowColor, accentColor),
-                  const SizedBox(height: 40),
-                  // _buildFeaturesSection(gradientColors, cardColor, shadowColor),
-                  const SizedBox(height: 40),
-                  // _buildTestimonials(gradientColors, cardColor, shadowColor, accentColor),
                   const SizedBox(height: 60),
                 ],
               ),
@@ -951,23 +427,111 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildCategoriesSection(List<Color> gradientColors, Color cardColor,
-      Color shadowColor) {
+  Widget _buildAppBar(List<Color> gradientColors, List<Color> appBarColors,
+      Color accentColor, Color shadowColor) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 800),
+      height: 140,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [...appBarColors, accentColor.withOpacity(0.3)],
+          stops: const [0.0, 0.7, 1.0],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(40),
+          bottomRight: Radius.circular(40),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor.withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          )
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.3),
+                      Colors.white.withOpacity(0.1)
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.3),
+                    width: 2,
+                  ),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.travel_explore, color: Colors.white, size: 28),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text("Map feature coming soon!"),
+                        backgroundColor: gradientColors[0],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "PATHY",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                      Text(
+                        "גלה את ישראל",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 56),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoriesSection(
+      List<Color> gradientColors, Color cardColor, Color shadowColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        gradient:
-        LinearGradient(colors: [
-          cardColor.withOpacity(0.9),
-          Colors.white.withOpacity(0.9)
-        ]),
+        gradient: LinearGradient(
+          colors: [cardColor.withOpacity(0.9), Colors.white.withOpacity(0.9)],
+        ),
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-              color: shadowColor.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 8))
+            color: shadowColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          )
         ],
       ),
       child: Column(
@@ -977,11 +541,14 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             children: [
               Icon(Icons.explore, color: gradientColors[0], size: 28),
               const SizedBox(width: 10),
-              Text("בחר את סוג הטיול שלך",
-                  style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: gradientColors[0])),
+              Text(
+                "בחר את סוג הטיול שלך",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: gradientColors[0],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 30),
@@ -991,8 +558,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             alignment: WrapAlignment.center,
             children: categories.map((cat) {
               final isSelected = cat["name"] == selectedCategory;
-              final List<Color> catColors = List<Color>.from(
-                  cat["gradientColors"]);
+              final List<Color> catColors =
+              List<Color>.from(cat["gradientColors"]);
               final Color catShadow = cat["shadowColor"];
               return GestureDetector(
                 onTap: () => setState(() => selectedCategory = cat["name"]),
@@ -1004,26 +571,33 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
-                            colors: [catColors[1], catColors[0]]),
+                          colors: [catColors[1], catColors[0]],
+                        ),
                         boxShadow: [
                           BoxShadow(
-                              color: catShadow.withOpacity(0.6),
-                              blurRadius: isSelected ? 25 : 15,
-                              offset: const Offset(0, 8)),
+                            color: catShadow.withOpacity(0.6),
+                            blurRadius: isSelected ? 25 : 15,
+                            offset: const Offset(0, 8),
+                          ),
                           if (isSelected)
-                            const BoxShadow(color: Colors.white,
-                                blurRadius: 10,
-                                offset: Offset(0, -3)),
+                            const BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 10,
+                              offset: Offset(0, -3),
+                            ),
                         ],
-                        border: isSelected ? Border.all(
-                            color: Colors.white, width: 4) : null,
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 4)
+                            : null,
                       ),
                       child: Icon(cat["icon"], size: 45, color: Colors.white),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         gradient: isSelected
                             ? LinearGradient(colors: catColors)
@@ -1049,23 +623,22 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildDestinationsGrid(List<Color> gradientColors, Color cardColor,
-      Color shadowColor) {
+  Widget _buildDestinationsGrid(
+      List<Color> gradientColors, Color cardColor, Color shadowColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        gradient:
-        LinearGradient(colors: [
-          Colors.white.withOpacity(0.95),
-          cardColor.withOpacity(0.8)
-        ]),
+        gradient: LinearGradient(
+          colors: [Colors.white.withOpacity(0.95), cardColor.withOpacity(0.8)],
+        ),
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-              color: shadowColor.withOpacity(0.3),
-              blurRadius: 15,
-              offset: const Offset(0, 8))
+            color: shadowColor.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          )
         ],
       ),
       child: Column(
@@ -1075,10 +648,14 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             children: [
               Icon(Icons.place, color: gradientColors[0], size: 28),
               const SizedBox(width: 10),
-              Text("יעדים מומלצים",
-                  style: TextStyle(fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: gradientColors[0])),
+              Text(
+                "יעדים מומלצים",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: gradientColors[0],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 25),
@@ -1091,21 +668,22 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             ),
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: displayedDestinations,
+            itemCount: displayedDestinations.clamp(0, allDestinations.length),
             itemBuilder: (context, index) {
               final destination = allDestinations[index];
               return GestureDetector(
                 onTap: () {
-                  // _showDestinationDetails(context, destination);
+                  _showDestinationDetails(context, destination);
                 },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5)),
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
                     ],
                   ),
                   child: ClipRRect(
@@ -1128,8 +706,11 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                                   ],
                                 ),
                               ),
-                              child: const Icon(Icons.image_not_supported,
-                                  color: Colors.white, size: 50),
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                color: Colors.white,
+                                size: 50,
+                              ),
                             );
                           },
                           loadingBuilder: (context, child, loadingProgress) {
@@ -1137,17 +718,13 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                             return Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [
-                                    gradientColors[0],
-                                    gradientColors[1]
-                                  ],
+                                  colors: [gradientColors[0], gradientColors[1]],
                                 ),
                               ),
                               child: Center(
                                 child: CircularProgressIndicator(
                                   color: Colors.white,
-                                  value: loadingProgress.expectedTotalBytes !=
-                                      null
+                                  value: loadingProgress.expectedTotalBytes != null
                                       ? loadingProgress.cumulativeBytesLoaded /
                                       loadingProgress.expectedTotalBytes!
                                       : null,
@@ -1197,8 +774,11 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    const Icon(Icons.location_on,
-                                        color: Colors.white, size: 14),
+                                    const Icon(
+                                      Icons.location_on,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
@@ -1211,8 +791,11 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    const Icon(Icons.star,
-                                        color: Colors.amber, size: 14),
+                                    const Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                      size: 14,
+                                    ),
                                     const SizedBox(width: 2),
                                     Text(
                                       "${destination['rating']}",
@@ -1243,31 +826,30 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                      color: shadowColor.withOpacity(0.5),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6))
+                    color: shadowColor.withOpacity(0.5),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  )
                 ],
               ),
               child: ElevatedButton.icon(
-                icon: const Icon(
-                    Icons.expand_more, color: Colors.white, size: 24),
+                icon: const Icon(Icons.expand_more, color: Colors.white, size: 24),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 32),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 onPressed: () {
                   setState(() {
-                    displayedDestinations = (displayedDestinations + 15).clamp(
-                        0, allDestinations.length);
+                    displayedDestinations =
+                        (displayedDestinations + 15).clamp(0, allDestinations.length);
                   });
                 },
                 label: Text(
-                  "ראה עוד (${allDestinations.length -
-                      displayedDestinations} נותרו)",
+                  "ראה עוד (${allDestinations.length - displayedDestinations} נותרו)",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -1283,19 +865,19 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                    colors: [Colors.grey[400]!, Colors.grey[600]!]),
+                  colors: [Colors.grey[400]!, Colors.grey[600]!],
+                ),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ElevatedButton.icon(
-                icon: const Icon(
-                    Icons.expand_less, color: Colors.white, size: 24),
+                icon: const Icon(Icons.expand_less, color: Colors.white, size: 24),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 32),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 onPressed: () {
                   setState(() {
@@ -1318,31 +900,28 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
-  // show destination details bottom sheet
-  void _showDestinationDetails(BuildContext context,
-      Map<String, dynamic> destination) {
+  void _showDestinationDetails(
+      BuildContext context, Map<String, dynamic> destination) {
     final currentCategory = currentCategoryData;
-    final List<Color> gradientColors = List<Color>.from(
-        currentCategory["gradientColors"]);
+    final List<Color> gradientColors =
+    List<Color>.from(currentCategory["gradientColors"]);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) =>
-          Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.85,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-            ),
-            child: Column(
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: Column(
+          children: [
+            Stack(
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.only(
@@ -1351,153 +930,370 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                   ),
                   child: Image.network(
                     destination['imageUrl'],
-                    height: 280,
+                    height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 300,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [gradientColors[0], gradientColors[1]],
+                          ),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.white,
+                            size: 80,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(destination['name'],
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: gradientColors[0])),
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Icon(Icons.location_on,
-                                color: gradientColors[0], size: 18),
-                            const SizedBox(width: 5),
-                            Text(destination['location']),
-                            const Spacer(),
-                            const Icon(
-                                Icons.star, color: Colors.amber, size: 18),
-                            Text("${destination['rating']}"),
-                          ],
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          "תיאור המקום כאן... ניתן להוסיף מידע נוסף לפי הצורך.",
-                          style: TextStyle(
-                              color: Colors.grey[800], height: 1.5),
-                        ),
-                        const SizedBox(height: 20),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            _buildFeatureChip(
-                                Icons.local_parking, "חניה", gradientColors[0]),
-                            _buildFeatureChip(
-                                Icons.restaurant, "מסעדות", gradientColors[0]),
-                            _buildFeatureChip(
-                                Icons.wc, "שירותים", gradientColors[0]),
-                          ],
-                        )
                       ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ),
                 ),
               ],
             ),
-          ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      destination['name'],
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: gradientColors[0],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on, color: gradientColors[0], size: 20),
+                        const SizedBox(width: 5),
+                        Text(
+                          destination['location'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        const Spacer(),
+                        const Icon(Icons.star, color: Colors.amber, size: 20),
+                        const SizedBox(width: 5),
+                        Text(
+                          "${destination['rating']}",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    Text(
+                      "אודות המקום",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: gradientColors[0],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      destination['description'] ??
+                          "מקום מדהים לטיול! ${destination['name']} ממוקם ב${destination['location']} ומציע חוויה בלתי נשכחת. אידיאלי למשפחות, זוגות וחובבי טבע.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[800],
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 25),
+                    Text(
+                      "מתקנים זמינים",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: gradientColors[0],
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        _buildFeatureChip(
+                            Icons.local_parking, "חניה", gradientColors[0]),
+                        _buildFeatureChip(
+                            Icons.restaurant, "מסעדות", gradientColors[0]),
+                        _buildFeatureChip(Icons.wc, "שירותים", gradientColors[0]),
+                        _buildFeatureChip(
+                            Icons.accessible, "נגיש", gradientColors[0]),
+                        _buildFeatureChip(
+                            Icons.water_drop, "מים", gradientColors[0]),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: gradientColors),
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: gradientColors[0].withOpacity(0.4),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.directions, color: Colors.white),
+                        label: const Text(
+                          "קבל הוראות הגעה",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("פותח ניווט ל${destination['name']}"),
+                              backgroundColor: gradientColors[0],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  // helper for feature chips
   Widget _buildFeatureChip(IconData icon, String label, Color color) {
     return Chip(
-      avatar: Icon(icon, color: Colors.white, size: 18),
-      label: Text(label, style: const TextStyle(color: Colors.white)),
-      backgroundColor: color,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      avatar: Icon(icon, size: 18, color: color),
+      label: Text(label),
+      backgroundColor: color.withOpacity(0.1),
+      side: BorderSide(color: color.withOpacity(0.3)),
     );
   }
 
-  // active filters bar
   Widget _buildActiveFilters(List<String> activeFilters,
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: shadowColor.withOpacity(0.25), blurRadius: 12),
+        gradient: LinearGradient(
+          colors: [Colors.white.withOpacity(0.9), cardColor.withOpacity(0.7)],
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        children: [
+          Text(
+            "פילטרים פעילים",
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: gradientColors[0],
+              fontSize: 18,
+            ),
+          ),
+          const SizedBox(height: 15),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: activeFilters.map((f) {
+              final filterKey = f.startsWith("אזור") ? "אזור" : f;
+              final filterMeta = filters[filterKey];
+              return Chip(
+                avatar: Icon(filterMeta?["icon"], size: 18, color: Colors.white),
+                label: Text(f, style: const TextStyle(color: Colors.white)),
+                backgroundColor: gradientColors[0],
+                deleteIcon: const Icon(Icons.close_rounded, size: 20, color: Colors.white),
+                onDeleted: () {
+                  setState(() {
+                    if (f.startsWith("אזור")) {
+                      selectedFilters["אזור"] = false;
+                      selectedRegion = "הכל";
+                    } else {
+                      selectedFilters[f] = false;
+                    }
+                  });
+                },
+              );
+            }).toList(),
+          ),
         ],
       ),
-      child: Wrap(
-        spacing: 8,
-        children: activeFilters
-            .map((f) =>
-            Chip(
-              label: Text(f, style: const TextStyle(color: Colors.white)),
-              backgroundColor: gradientColors[0],
-            ))
-            .toList(),
-      ),
     );
   }
 
-
-  Widget _buildFilterButton(List<Color> gradientColors, Color shadowColor, Color accentColor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+  Widget _buildFilterButton(
+      List<Color> gradientColors, Color shadowColor, Color accentColor) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(colors: [...gradientColors, accentColor]),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: shadowColor.withOpacity(0.6),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          )
+        ],
+      ),
       child: ElevatedButton.icon(
-        icon: const Icon(Icons.filter_list),
+        icon: const Icon(Icons.tune, color: Colors.white, size: 24),
         style: ElevatedButton.styleFrom(
-          backgroundColor: gradientColors[0],
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20)),
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         ),
-        onPressed: () {
-          // open filter bottom sheet here
-        },
-        label: const Text("סינון", style: TextStyle(color: Colors.white)),
+        onPressed: () => _showFilterDialog(context),
+        label: const Text(
+          "סינון מתקדם",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
   }
 
+  void _showFilterDialog(BuildContext context) {
+    final tempFilters = Map<String, bool>.from(selectedFilters);
+    String tempRegion = selectedRegion;
 
-
-    // testimonials section
-    Widget _buildTestimonials(List<Color> gradientColors, Color cardColor, Color shadowColor, Color accentColor) {
-      final testimonials = [
-        {"name": "נועה", "text": "חוויה מדהימה!"},
-        {"name": "דני", "text": "מסלול מהמם, שירות מעולה"},
-      ];
-      return Container(
-        margin: const EdgeInsets.all(20),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(color: shadowColor.withOpacity(0.3), blurRadius: 12),
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text("בחר אפשרויות סינון"),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: ListView(
+              children: filters.entries.map((entry) {
+                return CheckboxListTile(
+                  value: tempFilters[entry.key] ?? false,
+                  onChanged: (val) {
+                    setStateDialog(() {
+                      tempFilters[entry.key] = val ?? false;
+                      if (entry.key == "אזור" && val == true) {
+                        _showRegionDialog(context, (region) {
+                          setStateDialog(() {
+                            tempRegion = region;
+                            if (region == "הכל") tempFilters["אזור"] = false;
+                          });
+                        });
+                      }
+                    });
+                  },
+                  title: Text(entry.key),
+                  secondary: Icon(entry.value["icon"]),
+                );
+              }).toList(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("ביטול"),
+            ),
+            TextButton(
+              onPressed: () {
+                setStateDialog(() {
+                  tempFilters.updateAll((key, value) => false);
+                  tempRegion = "הכל";
+                });
+              },
+              child: const Text("נקה הכל"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  selectedFilters
+                    ..clear()
+                    ..addAll(tempFilters);
+                  selectedRegion = tempRegion;
+                });
+                Navigator.pop(context);
+              },
+              child: const Text("אישור"),
+            ),
           ],
         ),
-        child: Column(
-          children: testimonials
-              .map((t) =>
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: gradientColors[0],
-                  child: Text(t["name"]![0],
-                      style: const TextStyle(color: Colors.white)),
-                ),
-                title: Text(t["name"]!),
-                subtitle: Text(t["text"]!),
-              ))
+      ),
+    );
+  }
+
+  void _showRegionDialog(BuildContext context, Function(String) onRegionSelected) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("בחר אזור"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: regions
+              .map(
+                (region) => ListTile(
+              title: Text(region),
+              onTap: () {
+                onRegionSelected(region);
+                Navigator.pop(context);
+              },
+            ),
+          )
               .toList(),
         ),
-      );
-    }
-
+      ),
+    );
   }
+}
