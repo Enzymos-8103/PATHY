@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-
+import 'destination_details_page.dart';
 // Assuming Utils class exists in your project
 // import '../Models/utils.dart';
 
@@ -431,7 +431,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
       Color accentColor, Color shadowColor) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 800),
-      height: 140,
+      height: 100, // ⬅️ reduced height from 140 → 100
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -440,22 +440,25 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
           stops: const [0.0, 0.7, 1.0],
         ),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(40),
-          bottomRight: Radius.circular(40),
+          bottomLeft: Radius.circular(30), // ⬅️ slightly smaller corners
+          bottomRight: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
             color: shadowColor.withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            blurRadius: 15, // ⬅️ softer shadow
+            offset: const Offset(0, 6),
           )
         ],
       ),
       child: SafeArea(
+        bottom: false, // ⬅️ removes extra padding below
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // 🌍 Left icon (smaller)
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -464,14 +467,15 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       Colors.white.withOpacity(0.1)
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(50),
+                  borderRadius: BorderRadius.circular(40),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.3),
-                    width: 2,
+                    width: 1.5,
                   ),
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.travel_explore, color: Colors.white, size: 28),
+                  icon: const Icon(Icons.travel_explore,
+                      color: Colors.white, size: 24), // ⬅️ smaller icon
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -482,6 +486,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                   },
                 ),
               ),
+
+              // 🧭 Title (smaller)
               const Expanded(
                 child: Center(
                   child: Column(
@@ -490,31 +496,68 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       Text(
                         "PATHY",
                         style: TextStyle(
-                          fontSize: 32,
+                          fontSize: 26, // ⬅️ smaller title
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
-                          letterSpacing: 3,
+                          letterSpacing: 2,
                         ),
                       ),
                       Text(
                         "גלה את ישראל",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12, // ⬅️ smaller subtitle
                           color: Colors.white70,
-                          letterSpacing: 2,
+                          letterSpacing: 1.5,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(width: 56),
+
+              // 🔎 Search bar (compact)
+              SizedBox(
+                width: 160, // ⬅️ narrower search bar
+                height: 36,
+                child: TextField(
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  cursorColor: Colors.white,
+                  decoration: InputDecoration(
+                    hintText: "חפש...",
+                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    prefixIcon: const Icon(Icons.search, color: Colors.white, size: 18),
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.2),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: BorderSide(
+                        color: Colors.white.withOpacity(0.4),
+                        width: 1,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                      borderSide: const BorderSide(
+                        color: Colors.white,
+                        width: 1.2,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      // Filter logic placeholder
+                    });
+                  },
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   Widget _buildCategoriesSection(
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
@@ -906,210 +949,16 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     final List<Color> gradientColors =
     List<Color>.from(currentCategory["gradientColors"]);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-        ),
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                  child: Image.network(
-                    destination['imageUrl'],
-                    height: 300,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 300,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [gradientColors[0], gradientColors[1]],
-                          ),
-                        ),
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            color: Colors.white,
-                            size: 80,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  top: 20,
-                  right: 20,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      destination['name'],
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: gradientColors[0],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on, color: gradientColors[0], size: 20),
-                        const SizedBox(width: 5),
-                        Text(
-                          destination['location'],
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.star, color: Colors.amber, size: 20),
-                        const SizedBox(width: 5),
-                        Text(
-                          "${destination['rating']}",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    const Divider(),
-                    const SizedBox(height: 20),
-                    Text(
-                      "אודות המקום",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: gradientColors[0],
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      destination['description'] ??
-                          "מקום מדהים לטיול! ${destination['name']} ממוקם ב${destination['location']} ומציע חוויה בלתי נשכחת. אידיאלי למשפחות, זוגות וחובבי טבע.",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[800],
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    Text(
-                      "מתקנים זמינים",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: gradientColors[0],
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      children: [
-                        _buildFeatureChip(
-                            Icons.local_parking, "חניה", gradientColors[0]),
-                        _buildFeatureChip(
-                            Icons.restaurant, "מסעדות", gradientColors[0]),
-                        _buildFeatureChip(Icons.wc, "שירותים", gradientColors[0]),
-                        _buildFeatureChip(
-                            Icons.accessible, "נגיש", gradientColors[0]),
-                        _buildFeatureChip(
-                            Icons.water_drop, "מים", gradientColors[0]),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: gradientColors),
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: gradientColors[0].withOpacity(0.4),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.directions, color: Colors.white),
-                        label: const Text(
-                          "קבל הוראות הגעה",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("פותח ניווט ל${destination['name']}"),
-                              backgroundColor: gradientColors[0],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DestinationDetailsPage(
+          destination: destination,
+          gradientColors: gradientColors,
         ),
       ),
     );
   }
-
   Widget _buildFeatureChip(IconData icon, String label, Color color) {
     return Chip(
       avatar: Icon(icon, size: 18, color: color),
