@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'AuthScreen.dart';
-
+import 'PurchaseScreen.dart';
 class DestinationDetailsPage extends StatefulWidget {
   final Map<String, dynamic> destination;
   final List<Color> gradientColors;
@@ -445,6 +445,7 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
                             ),
                           ),
 
+
                           if (_selectedRating > 0) ...[
                             const SizedBox(height: 15),
                             TextField(
@@ -519,6 +520,42 @@ class _DestinationDetailsPageState extends State<DestinationDetailsPage> {
                     ),
 
                     const SizedBox(height: 40),
+                    // Add this button in your DestinationDetailsPage
+                    Container(
+                      width: double.infinity,
+                      height: 60,
+                      margin: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: widget.gradientColors),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.shopping_cart, color: Colors.white, size: 28),
+                        label: const Text(
+                          'רכוש טיול',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PurchaseTripPage(
+                                destination: widget.destination,
+                                gradientColors: widget.gradientColors,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
 
                     // 📜 Public Reviews Section
                     if (_reviews.isNotEmpty) ...[

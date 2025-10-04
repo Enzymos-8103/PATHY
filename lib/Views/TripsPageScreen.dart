@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pathy/Views/SearchScreen.dart';
+import 'package:pathy/Views/search/area_search_button.dart';
 import 'DestinationDetailsScreen.dart';
-// Assuming Utils class exists in your project
-// import '../Models/utils.dart';
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
@@ -13,6 +13,9 @@ class TripsPage extends StatefulWidget {
 }
 
 class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+  bool _showBottomButtons = false;
+
   String selectedCategory = "הכל";
   String selectedRegion = "הכל";
   late AnimationController _animationController;
@@ -33,8 +36,6 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     }
   }
 
-
-
   void _showNoInternetDialog() {
     showDialog(
       context: context,
@@ -50,9 +51,6 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
       ),
     );
   }
-
-
-
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -147,113 +145,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     },
   ];
 
-  final List<Map<String, dynamic>> allDestinations = [
-    {
-      "name": "ים המלח",
-      "location": "דרום",
-      "imageUrl": "https://images.pexels.com/photos/3244513/pexels-photo-3244513.jpeg",
-      "rating": 4.9,
-      "description": "ים המלח הוא אחד המקומות המיוחדים בעולם. הוא נמצא בנקודה הנמוכה ביותר על פני כדור הארץ, כ-430 מטרים מתחת לפני הים. המים במלוחים ביותר בעולם ומאפשרים ציפה ייחודית."
-    },
-    {
-      "name": "עין גדי",
-      "location": "דרום",
-      "imageUrl": "https://images.pexels.com/photos/326311/pexels-photo-326311.jpeg",
-      "rating": 4.8,
-      "description": "שמורת טבע עין גדי מציעה נחלים, מפלים ונוף מדברי עוצר נשימה. מקום מושלם לטיולים ורחצה במים קרירים."
-    },
-    {
-      "name": "הכותל המערבי",
-      "location": "ירושלים",
-      "imageUrl": "https://images.pexels.com/photos/572313/pexels-photo-572313.jpeg",
-      "rating": 5.0,
-      "description": "הכותל המערבי הוא אחד..."
-    },
-    {
-      "name": "תל אביב",
-      "location": "מרכז",
-      "imageUrl": "https://images.pexels.com/photos/2193300/pexels-photo-2193300.jpeg",
-      "rating": 4.7,
-      "description": "עיר תוססת עם חופים יפים..."
-    },
-    {
-      "name": "חיפה",
-      "location": "צפון",
-      "imageUrl": "https://images.pexels.com/photos/587115/pexels-photo-587115.jpeg",
-      "rating": 4.6,
-      "description": "עיר נמל ציורית עם גנים הבהאיים..."
-    },
-    {
-      "name": "אילת",
-      "location": "דרום",
-      "imageUrl": "https://images.pexels.com/photos/21014/pexels-photo.jpg",
-      "rating": 4.8,
-      "description": "עיר נופש באזור הדרומי ביותר..."
-    },
-    {
-      "name": "מצדה",
-      "location": "דרום",
-      "imageUrl": "https://images.pexels.com/photos/301428/pexels-photo-301428.jpeg",
-      "rating": 4.9,
-      "description": "אתר ארכיאולוגי מרשים..."
-    },
-    {
-      "name": "הגליל",
-      "location": "צפון",
-      "imageUrl": "https://images.pexels.com/photos/462118/pexels-photo-462118.jpeg",
-      "rating": 4.7,
-      "description": "אזור הררי ירוק עם כפרים ציוריים..."
-    },
-    {
-      "name": "כנרת",
-      "location": "צפון",
-      "imageUrl": "https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg",
-      "rating": 4.8,
-      "description": "ים המים היפה בישראל..."
-    },
-    {
-      "name": "גן הבהאים",
-      "location": "חיפה",
-      "imageUrl": "https://images.pexels.com/photos/346429/pexels-photo-346429.jpeg",
-      "rating": 4.9,
-      "description": "גנים מדהימים עם טרסות..."
-    },
-    {
-      "name": "העיר העתיקה",
-      "location": "ירושלים",
-      "imageUrl": "https://images.pexels.com/photos/253828/pexels-photo-253828.jpeg",
-      "rating": 5.0,
-      "description": "העיר העתיקה של ירושלים היא מקום מרתק..."
-    },
-    {
-      "name": "ראש הנקרה",
-      "location": "צפון",
-      "imageUrl": "https://images.pexels.com/photos/268431/pexels-photo-268431.jpeg",
-      "rating": 4.7,
-      "description": "מערות מרהיבות בצוק הים..."
-    },
-    {
-      "name": "קיסריה",
-      "location": "מרכז",
-      "imageUrl": "https://images.pexels.com/photos/21014/pexels-photo-21014.jpeg",
-      "rating": 4.6,
-      "description": "עיר עתיקה עם שרידים רומיים מרשימים..."
-    },
-    {
-      "name": "מצפה רמון",
-      "location": "דרום",
-      "imageUrl": "https://images.pexels.com/photos/65945/pexels-photo-65945.jpeg",
-      "rating": 4.9,
-      "description": "מכתש ענק ומדהים במדבר הנגב..."
-    },
-    {
-      "name": "טבריה",
-      "location": "צפון",
-      "imageUrl": "https://images.pexels.com/photos/57481/pexels-photo-57481.jpeg",
-      "rating": 4.5,
-      "description": "עיר עתיקה על שפת הכנרת..."
-    },
-  ];
+  final List<Map<String, dynamic>> allDestinations = [];
 
   final Map<String, Map<String, dynamic>> filters = {
     "אזור": {
@@ -329,6 +221,20 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     }
     _animationController.forward();
     _floatingController.repeat(reverse: true);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 100) {
+        if (!_showBottomButtons) {
+          setState(() => _showBottomButtons = true);
+        }
+      } else {
+        if (_showBottomButtons) {
+          setState(() => _showBottomButtons = false);
+        }
+      }
+    });
+
     _checkConnectionOnInit();
   }
 
@@ -338,6 +244,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _animationController.dispose();
     _floatingController.dispose();
     super.dispose();
@@ -399,7 +306,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                           Icons.local_florist,
                           Icons.wb_sunny,
                           Icons.waves,
-                          Icons.terrain
+                          Icons.terrain,
                         ][index],
                         size: 40 + (index % 3) * 20,
                         color: accentColor,
@@ -410,6 +317,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
               );
             }),
             SingleChildScrollView(
+              controller: _scrollController,
               child: Column(
                 children: [
                   _buildAppBar(gradientColors, appBarColors, accentColor, shadowColor),
@@ -420,24 +328,164 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                   const SizedBox(height: 40),
                   if (activeFilters.isNotEmpty)
                     _buildActiveFilters(
-                        activeFilters, gradientColors, cardColor, shadowColor),
+                      activeFilters,
+                      gradientColors,
+                      cardColor,
+                      shadowColor,
+                    ),
                   const SizedBox(height: 40),
                   _buildFilterButton(gradientColors, shadowColor, accentColor),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
+            if (_showBottomButtons)
+              Positioned.fill(
+                child: IgnorePointer(
+                  ignoring: !_showBottomButtons,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 400),
+                    opacity: _showBottomButtons ? 1.0 : 0.0,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          bottom: 20,
+                          left: 20,
+                          child:FloatingActionButton(
+                            heroTag: "pointsButton",
+                            backgroundColor: gradientColors[1],
+                            child: const Icon(Icons.emoji_events, color: Colors.white),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                  title: const Text(
+                                    "דירוג המטיילים ותוכנית הנקודות של PATHY",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: const [
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "צאו לטייל, שתפו חוויות ודרגו מסלולים – וכל פעולה שלכם מזכה אתכם בנקודות ומקדמת אתכם בדרגות המטיילים של PATHY.",
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        SizedBox(height: 16),
+                                        Divider(),
+                                        Text(
+                                          "איך צוברים נקודות:",
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        SizedBox(height: 6),
+                                        Text(
+                                          "• דירוג טיול שביצעתם – 1 נקודה\n"
+                                              "• פרסום תמונה או חוות דעת – 5 נקודות\n"
+                                              "• הצעת מסלול חדש – 15 נקודות\n"
+                                              "• הזמנת חבר שמצטרף – 30 נקודות\n",
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        Divider(),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "דרגות המטיילים:",
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        SizedBox(height: 8),
+
+                                        // 🥉 Bronze
+                                        ListTile(
+                                          leading: Icon(Icons.landscape, color: Colors.brown),
+                                          title: Text("מטייל חדש", textAlign: TextAlign.right),
+                                          subtitle: Text("0–100 נקודות", textAlign: TextAlign.right),
+                                          trailing: Icon(Icons.star_border, color: Colors.brown),
+                                        ),
+
+                                        // 🥈 Silver
+                                        ListTile(
+                                          leading: Icon(Icons.hiking, color: Colors.grey),
+                                          title: Text("מטייל פעיל", textAlign: TextAlign.right),
+                                          subtitle: Text("101–300 נקודות", textAlign: TextAlign.right),
+                                          trailing: Icon(Icons.star_half, color: Colors.grey),
+                                        ),
+
+                                        // 🥇 Gold
+                                        ListTile(
+                                          leading: Icon(Icons.terrain, color: Colors.amber),
+                                          title: Text("מגלה ארצות", textAlign: TextAlign.right),
+                                          subtitle: Text("301–600 נקודות", textAlign: TextAlign.right),
+                                          trailing: Icon(Icons.star, color: Colors.amber),
+                                        ),
+
+                                        // 💎 Explorer
+                                        ListTile(
+                                          leading: Icon(Icons.explore, color: Colors.blueAccent),
+                                          title: Text("מטייל בכיר", textAlign: TextAlign.right),
+                                          subtitle: Text("601–1000 נקודות", textAlign: TextAlign.right),
+                                          trailing: Icon(Icons.diamond, color: Colors.blueAccent),
+                                        ),
+
+                                        // 👑 Ambassador
+                                        ListTile(
+                                          leading: Icon(Icons.public, color: Colors.deepPurple),
+                                          title: Text("שגריר PATHY", textAlign: TextAlign.right),
+                                          subtitle: Text("1001 נקודות ומעלה", textAlign: TextAlign.right),
+                                          trailing: Icon(Icons.workspace_premium, color: Colors.deepPurple),
+                                        ),
+
+                                        Divider(),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "הנקודות ניתנות למימוש כהנחות, הטבות ותגי הישגים אישיים.\n"
+                                              "הדירוג שלכם מוצג בטבלת המטיילים העולמית של PATHY, המתעדכנת מדי שבוע.",
+                                          textAlign: TextAlign.right,
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          "צאו לגלות, לשתף ולהתקדם – העולם מחכה לכם.",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text("סגור"),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBar(List<Color> gradientColors, List<Color> appBarColors,
-      Color accentColor, Color shadowColor) {
+  Widget _buildAppBar(
+      List<Color> gradientColors,
+      List<Color> appBarColors,
+      Color accentColor,
+      Color shadowColor,
+      ) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 800),
-      height: 100, // ⬅️ reduced height from 140 → 100
+      height: 100,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -446,25 +494,25 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
           stops: const [0.0, 0.7, 1.0],
         ),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(30), // ⬅️ slightly smaller corners
+          bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
             color: shadowColor.withOpacity(0.4),
-            blurRadius: 15, // ⬅️ softer shadow
+            blurRadius: 15,
             offset: const Offset(0, 6),
           )
         ],
       ),
       child: SafeArea(
-        bottom: false, // ⬅️ removes extra padding below
+        bottom: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 🌍 Left icon (smaller)
+              // 🌍 Icon button (map placeholder)
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -481,11 +529,11 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.travel_explore,
-                      color: Colors.white, size: 24), // ⬅️ smaller icon
+                      color: Colors.white, size: 24),
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: const Text("Map feature coming soon!"),
+                        content: const Text("מפת היעדים תתווסף בקרוב"),
                         backgroundColor: gradientColors[0],
                       ),
                     );
@@ -493,7 +541,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 🧭 Title (smaller)
+              // 🏞️ App name
               const Expanded(
                 child: Center(
                   child: Column(
@@ -502,7 +550,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       Text(
                         "PATHY",
                         style: TextStyle(
-                          fontSize: 26, // ⬅️ smaller title
+                          fontSize: 26,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                           letterSpacing: 2,
@@ -511,7 +559,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                       Text(
                         "גלה את ישראל",
                         style: TextStyle(
-                          fontSize: 12, // ⬅️ smaller subtitle
+                          fontSize: 12,
                           color: Colors.white70,
                           letterSpacing: 1.5,
                         ),
@@ -521,40 +569,36 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 ),
               ),
 
-              // 🔎 Search bar (compact)
-              SizedBox(
-                width: 160, // ⬅️ narrower search bar
-                height: 36,
-                child: TextField(
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                  cursorColor: Colors.white,
-                  decoration: InputDecoration(
-                    hintText: "חפש...",
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
-                    prefixIcon: const Icon(Icons.search, color: Colors.white, size: 18),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.2),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: BorderSide(
-                        color: Colors.white.withOpacity(0.4),
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25),
-                      borderSide: const BorderSide(
-                        color: Colors.white,
-                        width: 1.2,
-                      ),
-                    ),
+              // 🔍 Search button — navigates to SearchScreen
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SearchScreen()),
+                  );
+                },
+                child: Container(
+                  height: 38,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      // Filter logic placeholder
-                    });
-                  },
+                  child: Row(
+                    children: const [
+                      Icon(Icons.search, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        "חפש יעד...",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -565,11 +609,14 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   }
 
 
+
+
   Widget _buildCategoriesSection(
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
+    // ... your existing code unchanged ...
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(25),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [cardColor.withOpacity(0.9), Colors.white.withOpacity(0.9)],
@@ -588,22 +635,22 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.explore, color: gradientColors[0], size: 28),
-              const SizedBox(width: 10),
+              Icon(Icons.explore, color: gradientColors[0], size: 24),
+              const SizedBox(width: 8),
               Text(
                 "בחר את סוג הטיול שלך",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: gradientColors[0],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
           Wrap(
-            spacing: 20,
-            runSpacing: 25,
+            spacing: 12,
+            runSpacing: 15,
             alignment: WrapAlignment.center,
             children: categories.map((cat) {
               final isSelected = cat["name"] == selectedCategory;
@@ -615,8 +662,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 child: Column(
                   children: [
                     Container(
-                      width: 100,
-                      height: 100,
+                      width: 65,
+                      height: 65,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
@@ -625,38 +672,40 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                         boxShadow: [
                           BoxShadow(
                             color: catShadow.withOpacity(0.6),
-                            blurRadius: isSelected ? 25 : 15,
-                            offset: const Offset(0, 8),
+                            blurRadius: isSelected ? 20 : 12,
+                            offset: const Offset(0, 6),
                           ),
                           if (isSelected)
                             const BoxShadow(
                               color: Colors.white,
-                              blurRadius: 10,
-                              offset: Offset(0, -3),
+                              blurRadius: 8,
+                              offset: Offset(0, -2),
                             ),
                         ],
                         border: isSelected
-                            ? Border.all(color: Colors.white, width: 4)
+                            ? Border.all(color: Colors.white, width: 3)
                             : null,
                       ),
-                      child: Icon(cat["icon"], size: 45, color: Colors.white),
+                      child:
+                      Icon(cat["icon"], size: 30, color: Colors.white),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 10,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
                         gradient: isSelected
                             ? LinearGradient(colors: catColors)
                             : null,
                         color: isSelected ? null : Colors.transparent,
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
                         cat["name"],
                         style: TextStyle(
+                          fontSize: 12,
                           color: isSelected ? Colors.white : catColors[0],
                           fontWeight: FontWeight.bold,
                         ),
@@ -672,8 +721,14 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
+
+
+
+
+
   Widget _buildDestinationsGrid(
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
+    // ... your existing code unchanged ...
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(25),
@@ -708,322 +763,52 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
             ],
           ),
           const SizedBox(height: 25),
-
-
-
-
-
           SizedBox(
-            height: 400, // or MediaQuery height
-            child:
-            StreamBuilder<QuerySnapshot>(
-
-          stream: FirebaseFirestore.instance
-              .collection('destinations')
-              .orderBy('rating', descending: true) // You can sort by any field
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('No destinations found.'));
-            }
-
-            final destinations = snapshot.data!.docs;
-
-            return ListView.builder(
-              itemCount: destinations.length,
-              itemBuilder: (context, index) {
-                final data = destinations[index].data() as Map<String, dynamic>;
-
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(data['imageUrl'] ?? ''),
-                  ),
-                  title: Text(data['name'] ?? 'No name'),
-                  subtitle: Text(data['location'] ?? ''),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
-                      Text('${data['rating'] ?? ''}'),
-                    ],
-                  ),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: Text(data['name']),
-                        content: Text(data['description'] ?? ''),
-                        actions: [
-                          TextButton(
-                            child: const Text('Close'),
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
+            height: 400,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('destinations')
+                  .orderBy('rating', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No destinations found.'));
+                }
+                final destinations = snapshot.data!.docs;
+                return ListView.builder(
+                  itemCount: destinations.length,
+                  itemBuilder: (context, index) {
+                    final data =
+                    destinations[index].data() as Map<String, dynamic>;
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage:
+                        NetworkImage(data['imageUrl'] ?? ''),
+                      ),
+                      title: Text(data['name'] ?? 'No name'),
+                      subtitle: Text(data['location'] ?? ''),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.star, color: Colors.amber, size: 16),
+                          Text('${data['rating'] ?? ''}'),
                         ],
                       ),
+                      onTap: () {
+                        _showDestinationDetails(context, data);
+                      },
                     );
                   },
                 );
               },
-            );
-          },
-        ),
-
-
-          // )
-          // ]
-      ),
-
-
-
-    //
-    // GridView.builder(
-    //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-    //           crossAxisCount: 2,
-    //           mainAxisSpacing: 15,
-    //           crossAxisSpacing: 15,
-    //           childAspectRatio: 0.75,
-    //         ),
-    //         shrinkWrap: true,
-    //         physics: const NeverScrollableScrollPhysics(),
-    //         itemCount: displayedDestinations.clamp(0, allDestinations.length),
-    //         itemBuilder: (context, index) {
-    //           final destination = allDestinations[index];
-    //           return GestureDetector(
-    //             onTap: () {
-    //               _showDestinationDetails(context, destination);
-    //             },
-    //             child: Container(
-    //               decoration: BoxDecoration(
-    //                 borderRadius: BorderRadius.circular(20),
-    //                 boxShadow: [
-    //                   BoxShadow(
-    //                     color: Colors.black.withOpacity(0.2),
-    //                     blurRadius: 10,
-    //                     offset: const Offset(0, 5),
-    //                   ),
-    //                 ],
-    //               ),
-    //               child: ClipRRect(
-    //                 borderRadius: BorderRadius.circular(20),
-    //                 child: Stack(
-    //                   fit: StackFit.expand,
-    //                   children: [
-    //                     Image.network(
-    //                       destination['imageUrl'],
-    //                       fit: BoxFit.cover,
-    //                       errorBuilder: (context, error, stackTrace) {
-    //                         return Container(
-    //                           decoration: BoxDecoration(
-    //                             gradient: LinearGradient(
-    //                               begin: Alignment.topLeft,
-    //                               end: Alignment.bottomRight,
-    //                               colors: [
-    //                                 gradientColors[0].withOpacity(0.8),
-    //                                 gradientColors[1].withOpacity(0.6),
-    //                               ],
-    //                             ),
-    //                           ),
-    //                           child: const Icon(
-    //                             Icons.image_not_supported,
-    //                             color: Colors.white,
-    //                             size: 50,
-    //                           ),
-    //                         );
-    //                       },
-    //                       loadingBuilder: (context, child, loadingProgress) {
-    //                         if (loadingProgress == null) return child;
-    //                         return Container(
-    //                           decoration: BoxDecoration(
-    //                             gradient: LinearGradient(
-    //                               colors: [gradientColors[0], gradientColors[1]],
-    //                             ),
-    //                           ),
-    //                           child: Center(
-    //                             child: CircularProgressIndicator(
-    //                               color: Colors.white,
-    //                               value: loadingProgress.expectedTotalBytes != null
-    //                                   ? loadingProgress.cumulativeBytesLoaded /
-    //                                   loadingProgress.expectedTotalBytes!
-    //                                   : null,
-    //                             ),
-    //                           ),
-    //                         );
-    //                       },
-    //                     ),
-    //                     Container(
-    //                       decoration: BoxDecoration(
-    //                         gradient: LinearGradient(
-    //                           begin: Alignment.topCenter,
-    //                           end: Alignment.bottomCenter,
-    //                           colors: [
-    //                             Colors.transparent,
-    //                             Colors.black.withOpacity(0.8),
-    //                           ],
-    //                           stops: const [0.5, 1.0],
-    //                         ),
-    //                       ),
-    //                     ),
-    //                     Positioned(
-    //                       bottom: 0,
-    //                       left: 0,
-    //                       right: 0,
-    //                       child: Padding(
-    //                         padding: const EdgeInsets.all(12),
-    //                         child: Column(
-    //                           crossAxisAlignment: CrossAxisAlignment.start,
-    //                           children: [
-    //                             Text(
-    //                               destination['name'],
-    //                               style: const TextStyle(
-    //                                 color: Colors.white,
-    //                                 fontSize: 16,
-    //                                 fontWeight: FontWeight.bold,
-    //                                 shadows: [
-    //                                   Shadow(
-    //                                     color: Colors.black,
-    //                                     blurRadius: 4,
-    //                                   ),
-    //                                 ],
-    //                               ),
-    //                               maxLines: 2,
-    //                               overflow: TextOverflow.ellipsis,
-    //                             ),
-    //                             const SizedBox(height: 4),
-    //                             Row(
-    //                               children: [
-    //                                 const Icon(
-    //                                   Icons.location_on,
-    //                                   color: Colors.white,
-    //                                   size: 14,
-    //                                 ),
-    //                                 const SizedBox(width: 4),
-    //                                 Expanded(
-    //                                   child: Text(
-    //                                     destination['location'],
-    //                                     style: const TextStyle(
-    //                                       color: Colors.white,
-    //                                       fontSize: 12,
-    //                                     ),
-    //                                     maxLines: 1,
-    //                                     overflow: TextOverflow.ellipsis,
-    //                                   ),
-    //                                 ),
-    //                                 const Icon(
-    //                                   Icons.star,
-    //                                   color: Colors.amber,
-    //                                   size: 14,
-    //                                 ),
-    //                                 const SizedBox(width: 2),
-    //                                 Text(
-    //                                   "${destination['rating']}",
-    //                                   style: const TextStyle(
-    //                                     color: Colors.white,
-    //                                     fontSize: 12,
-    //                                     fontWeight: FontWeight.bold,
-    //                                   ),
-    //                                 ),
-    //                               ],
-    //                             ),
-    //                           ],
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ],
-    //                 ),
-    //               ),
-    //             ),
-    //           );
-    //         },
-    //       ),
-    //
-
-
-
-          if (displayedDestinations < allDestinations.length) ...[
-            const SizedBox(height: 25),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: gradientColors),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: shadowColor.withOpacity(0.5),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  )
-                ],
-              ),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.expand_more, color: Colors.white, size: 24),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    displayedDestinations =
-                        (displayedDestinations + 15).clamp(0, allDestinations.length);
-                  });
-                },
-                label: Text(
-                  "ראה עוד (${allDestinations.length - displayedDestinations} נותרו)",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
             ),
-          ],
-          if (displayedDestinations >= allDestinations.length &&
-              displayedDestinations > 15) ...[
-            const SizedBox(height: 25),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.grey[400]!, Colors.grey[600]!],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.expand_less, color: Colors.white, size: 24),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onPressed: () {
-                  setState(() {
-                    displayedDestinations = 15;
-                  });
-                },
-                label: const Text(
-                  "הצג פחות",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ],
       ),
     );
@@ -1045,6 +830,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
       ),
     );
   }
+
   Widget _buildFeatureChip(IconData icon, String label, Color color) {
     return Chip(
       avatar: Icon(icon, size: 18, color: color),
@@ -1225,8 +1011,7 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                 Navigator.pop(context);
               },
             ),
-          )
-              .toList(),
+          ).toList(),
         ),
       ),
     );
