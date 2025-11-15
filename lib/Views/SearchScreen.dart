@@ -56,20 +56,20 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
 
               // 🔍 Default expanded search bar with results
-              Expanded(
-                child: Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
-                    ),
-                  ),
-                  child: AreaSearchBarExpanded(), // 👈 We'll use a modified widget
-                ),
-              ),
+              // Expanded(
+              //   child: Container(
+              //     padding:
+              //     const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+              //     decoration: const BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.only(
+              //         topLeft: Radius.circular(40),
+              //         topRight: Radius.circular(40),
+              //       ),
+              //     ),
+              //     child: AreaSearchBarExpanded(), // 👈 We'll use a modified widget
+              //   ),
+              // ),
             ],
           ),
         ),

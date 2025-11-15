@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pathy/Views/SearchScreen.dart';
 import 'package:pathy/Views/search/area_search_button.dart';
 import 'DestinationDetailsScreen.dart';
+import 'AuthScreen.dart';
 
 class TripsPage extends StatefulWidget {
   const TripsPage({super.key});
@@ -15,6 +17,9 @@ class TripsPage extends StatefulWidget {
 class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _showBottomButtons = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  User? _currentUser;
+  String _userName = '';
 
   String selectedCategory = "הכל";
   String selectedRegion = "הכל";
@@ -236,6 +241,37 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     });
 
     _checkConnectionOnInit();
+    _checkAuthStatus();
+  }
+
+  Future<void> _checkAuthStatus() async {
+    _auth.authStateChanges().listen((User? user) async {
+      if (mounted) {
+        setState(() {
+          _currentUser = user;
+        });
+
+        if (user != null) {
+          // Fetch user name from Firestore
+          try {
+            DocumentSnapshot userDoc = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+            if (userDoc.exists && mounted) {
+              setState(() {
+                _userName = userDoc['name'] ?? user.displayName ?? 'משתמש';
+              });
+            }
+          } catch (e) {
+            setState(() {
+              _userName = user.displayName ?? 'משתמש';
+            });
+          }
+        }
+      }
+    });
   }
 
   Future<void> _checkConnectionOnInit() async {
@@ -323,7 +359,9 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                   _buildAppBar(gradientColors, appBarColors, accentColor, shadowColor),
                   const SizedBox(height: 40),
                   _buildCategoriesSection(gradientColors, cardColor, shadowColor),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 25),  // <-- CHANGED from 40 to 25
+                  _buildSearchButton(gradientColors, shadowColor),  // <-- ADD THIS NEW LINE
+                  const SizedBox(height: 25),  // <-- ADD THIS NEW LINE
                   _buildDestinationsGrid(gradientColors, cardColor, shadowColor),
                   const SizedBox(height: 40),
                   if (activeFilters.isNotEmpty)
@@ -397,47 +435,36 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                                           textAlign: TextAlign.right,
                                         ),
                                         SizedBox(height: 8),
-
-                                        // 🥉 Bronze
                                         ListTile(
                                           leading: Icon(Icons.landscape, color: Colors.brown),
                                           title: Text("מטייל חדש", textAlign: TextAlign.right),
                                           subtitle: Text("0–100 נקודות", textAlign: TextAlign.right),
                                           trailing: Icon(Icons.star_border, color: Colors.brown),
                                         ),
-
-                                        // 🥈 Silver
                                         ListTile(
                                           leading: Icon(Icons.hiking, color: Colors.grey),
                                           title: Text("מטייל פעיל", textAlign: TextAlign.right),
                                           subtitle: Text("101–300 נקודות", textAlign: TextAlign.right),
                                           trailing: Icon(Icons.star_half, color: Colors.grey),
                                         ),
-
-                                        // 🥇 Gold
                                         ListTile(
                                           leading: Icon(Icons.terrain, color: Colors.amber),
                                           title: Text("מגלה ארצות", textAlign: TextAlign.right),
                                           subtitle: Text("301–600 נקודות", textAlign: TextAlign.right),
                                           trailing: Icon(Icons.star, color: Colors.amber),
                                         ),
-
-                                        // 💎 Explorer
                                         ListTile(
                                           leading: Icon(Icons.explore, color: Colors.blueAccent),
                                           title: Text("מטייל בכיר", textAlign: TextAlign.right),
                                           subtitle: Text("601–1000 נקודות", textAlign: TextAlign.right),
                                           trailing: Icon(Icons.diamond, color: Colors.blueAccent),
                                         ),
-
-                                        // 👑 Ambassador
                                         ListTile(
                                           leading: Icon(Icons.public, color: Colors.deepPurple),
                                           title: Text("שגריר PATHY", textAlign: TextAlign.right),
                                           subtitle: Text("1001 נקודות ומעלה", textAlign: TextAlign.right),
                                           trailing: Icon(Icons.workspace_premium, color: Colors.deepPurple),
                                         ),
-
                                         Divider(),
                                         SizedBox(height: 8),
                                         Text(
@@ -464,7 +491,6 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                               );
                             },
                           ),
-
                         ),
                       ],
                     ),
@@ -477,6 +503,205 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildUserAuthCircle(List<Color> gradientColors, Color shadowColor) {
+    return GestureDetector(
+      onTap: () {
+        if (_currentUser == null) {
+          // Navigate to auth page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AuthPage()),
+          );
+        } else {
+          // Show user menu
+          _showUserMenu();
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: _currentUser != null
+                ? [Colors.green.shade400, Colors.green.shade600]
+                : [gradientColors[0], gradientColors[1]],
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: shadowColor.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            // Circle Avatar
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  )
+                ],
+              ),
+              child: Center(
+                child: Text(
+                  _currentUser != null ? '👤' : '🔐',
+                  style: const TextStyle(fontSize: 35),
+                ),
+              ),
+            ),
+            const SizedBox(width: 20),
+
+            // Text Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _currentUser != null ? 'מחובר ✓' : 'התחבר / הירשם',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    _currentUser != null
+                        ? 'שלום, $_userName! 👋'
+                        : 'גלה את כל האפשרויות',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Arrow Icon
+            Icon(
+              _currentUser != null ? Icons.menu : Icons.arrow_forward,
+              color: Colors.white,
+              size: 28,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showUserMenu() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 50,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // User Info
+            Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Colors.green.shade400, Colors.green.shade600],
+                    ),
+                  ),
+                  child: const Center(
+                    child: Text('👤', style: TextStyle(fontSize: 30)),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _userName,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        _currentUser?.email ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Divider(height: 30),
+
+            // Menu Options
+            ListTile(
+              leading: const Icon(Icons.person, color: Color(0xFF00796B)),
+              title: const Text('הפרופיל שלי'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('פרופיל - בקרוב')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Color(0xFF00796B)),
+              title: const Text('הגדרות'),
+              onTap: () {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('הגדרות - בקרוב')),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('התנתק'),
+              onTap: () async {
+                await _auth.signOut();
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('התנתקת בהצלחה')),
+                );
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
   Widget _buildAppBar(
       List<Color> gradientColors,
       List<Color> appBarColors,
@@ -512,36 +737,53 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 🌍 Icon button (map placeholder)
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white.withOpacity(0.3),
-                      Colors.white.withOpacity(0.1)
+              GestureDetector(
+                onTap: () {
+                  if (_currentUser == null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AuthPage()),
+                    );
+                  } else {
+                    _showUserMenu();
+                  }
+                },
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: _currentUser != null
+                          ? [Colors.green.shade300, Colors.green.shade500]
+                          : [Colors.white.withOpacity(0.3), Colors.white.withOpacity(0.1)],
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.5),
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(40),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.3),
-                    width: 1.5,
+                  child: Center(
+                    child: _currentUser != null
+                        ? Text(
+                      _userName.isNotEmpty ? _userName[0].toUpperCase() : '👤',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                        : const Icon(Icons.person_outline, color: Colors.white, size: 26),
                   ),
                 ),
-                child: IconButton(
-                  icon: const Icon(Icons.travel_explore,
-                      color: Colors.white, size: 24),
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text("מפת היעדים תתווסף בקרוב"),
-                        backgroundColor: gradientColors[0],
-                      ),
-                    );
-                  },
-                ),
               ),
-
-              // 🏞️ App name
               const Expanded(
                 child: Center(
                   child: Column(
@@ -568,52 +810,68 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-
-              // 🔍 Search button — navigates to SearchScreen
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SearchScreen()),
-                  );
-                },
-                child: Container(
-                  height: 38,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(color: Colors.white.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.search, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        "חפש יעד...",
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
       ),
     );
+  } // <-- _buildAppBar ENDS HERE
+
+// NOW ADD _buildSearchButton as a SEPARATE method:
+  Widget _buildSearchButton(List<Color> gradientColors, Color shadowColor) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white.withOpacity(0.95), Colors.white.withOpacity(0.85)],
+          ),
+          borderRadius: BorderRadius.circular(25),
+          boxShadow: [
+            BoxShadow(
+              color: shadowColor.withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            )
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: gradientColors),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(Icons.search, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Text(
+                "חפש יעד, אזור או קטגוריה...",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward, color: gradientColors[0]),
+          ],
+        ),
+      ),
+    );
   }
 
-
-
-
   Widget _buildCategoriesSection(
+
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
-    // ... your existing code unchanged ...
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -721,14 +979,8 @@ class _TripsPageState extends State<TripsPage> with TickerProviderStateMixin {
     );
   }
 
-
-
-
-
-
   Widget _buildDestinationsGrid(
       List<Color> gradientColors, Color cardColor, Color shadowColor) {
-    // ... your existing code unchanged ...
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(25),
